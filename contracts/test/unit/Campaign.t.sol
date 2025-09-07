@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 import {Test, console} from "forge-std/Test.sol";
 import {Campaign} from "../../src/Campaign.sol";
 
-contract CampaignTest is Test{
+contract CampaignTest is Test {
     Campaign public campaign;
     address public owner = address(0x1);
     address public user1 = address(0x2);
@@ -19,30 +19,46 @@ contract CampaignTest is Test{
     uint256 public constant USER2_AMOUNT = 3 ether;
     uint256 public constant USER3_AMOUNT = 2 ether;
 
-    function setUp() external{
+    function setUp() external {
         vm.prank(owner);
         campaign = new Campaign(owner, "Test Campaign", GOAL, DURATION_IN_DAYS);
         vm.deal(user1, 200 ether);
         vm.deal(user2, 200 ether);
     }
 
-    function testOwnerIsSetCorrectly() external view{
+    function testOwnerIsSetCorrectly() external view {
         address campaignOwner = campaign.getOwner();
         assertEq(campaignOwner, owner);
     }
 
-    function testInitialStateIsActive() external view{        
+    function testInitialStateIsActive() external view {
         Campaign.CampaignState state = campaign.getState();
-        assertEq(uint(state), uint(Campaign.CampaignState.Active));
+        assertEq(uint256(state), uint256(Campaign.CampaignState.Active));
     }
- 
-    function testDonateFundsRevertsIfNoFundsSent() external{
+
+    function testCheckAndUpdateCampaignState() external {
+        vm.prank(user1);
+        campaign.donateFunds{value: LESS_THAN_GOAL}();
+
+        // Check state remains active before duration ends
+        Campaign.CampaignState state = campaign.getState();
+        assertEq(uint256(state), uint256(Campaign.CampaignState.Active));
+        // Fast forward time beyond duration
+        vm.warp(block.timestamp + (DURATION_IN_DAYS * 1 days) + 1);
+        vm.prank(owner);
+        campaign.checkAndUpdateCampaignState();
+        // Check state is failed after duration ends
+        Campaign.CampaignState stateAfter = campaign.getState();
+        assertEq(uint256(stateAfter), uint256(Campaign.CampaignState.Failed));
+    }
+
+    function testDonateFundsRevertsIfNoFundsSent() external {
         vm.prank(user1);
         vm.expectRevert();
         campaign.donateFunds();
-    }  
-    
-    function testDonateFundsRevertsIfStateNotActive() external{
+    }
+
+    function testDonateFundsRevertsIfStateNotActive() external {
         vm.prank(user1);
         campaign.donateFunds{value: GOAL}();
 
@@ -55,7 +71,7 @@ contract CampaignTest is Test{
         campaign.donateFunds{value: USER2_AMOUNT}();
     }
 
-    function testDonateFundsUpdatesState() external{
+    function testDonateFundsUpdatesState() external {
         vm.prank(user1);
         campaign.donateFunds{value: USER1_AMOUNT}();
 
@@ -73,28 +89,27 @@ contract CampaignTest is Test{
         assertEq(user2Contribution, USER2_AMOUNT);
     }
 
-    function testCampaignBecomesSuccessfulAfterGoalReached() external{
+    function testCampaignBecomesSuccessfulAfterGoalReached() external {
         vm.prank(user1);
         campaign.donateFunds{value: GOAL}();
 
         Campaign.CampaignState state = campaign.getState();
-        assertEq(uint(state), uint(Campaign.CampaignState.Successful));
+        assertEq(uint256(state), uint256(Campaign.CampaignState.Successful));
     }
 
-    function testCampaignFailsIfGoalNotReached() external{
+    function testCampaignFailsIfGoalNotReached() external {
         vm.prank(user1);
         campaign.donateFunds{value: LESS_THAN_GOAL}();
 
         vm.warp(block.timestamp + (DURATION_IN_DAYS * 1 days) + 1);
         vm.prank(owner);
         campaign.checkAndUpdateCampaignState();
-        
-    
+
         Campaign.CampaignState state = campaign.getState();
-        assertEq(uint(state), uint(Campaign.CampaignState.Failed));
+        assertEq(uint256(state), uint256(Campaign.CampaignState.Failed));
     }
 
-    function testOnlyOwnerCanWithdrawFunds() external{
+    function testOnlyOwnerCanWithdrawFunds() external {
         vm.prank(user1);
         campaign.donateFunds{value: GOAL}();
 
@@ -109,7 +124,7 @@ contract CampaignTest is Test{
         assertEq(ownerFinalBalance - ownerInitialBalance, GOAL);
     }
 
-    function testWithdrawFailsIfCampaignFailed() external{
+    function testWithdrawFailsIfCampaignFailed() external {
         vm.prank(user1);
         campaign.donateFunds{value: LESS_THAN_GOAL}();
 
@@ -122,17 +137,16 @@ contract CampaignTest is Test{
         campaign.withdrawFunds();
     }
 
-    function testWithdrawFailsIfCampaignActive() external{
+    function testWithdrawFailsIfCampaignActive() external {
         vm.prank(user1);
         campaign.donateFunds{value: LESS_THAN_GOAL}();
 
         vm.prank(owner);
         vm.expectRevert();
         campaign.withdrawFunds();
-
     }
 
-    function testWithdrawal() external{
+    function testWithdrawal() external {
         vm.prank(user1);
         campaign.donateFunds{value: GOAL}();
         uint256 ownerInitialBalance = owner.balance;
@@ -142,9 +156,9 @@ contract CampaignTest is Test{
         uint256 ownerFinalBalance = owner.balance;
 
         assertEq(ownerFinalBalance - ownerInitialBalance, GOAL);
-    }    
+    }
 
-    function testClaimRefundFailsIfCampaignActive() external{
+    function testClaimRefundFailsIfCampaignActive() external {
         vm.prank(user1);
         campaign.donateFunds{value: LESS_THAN_GOAL}();
 
@@ -153,7 +167,7 @@ contract CampaignTest is Test{
         campaign.claimRefund();
     }
 
-    function testClaimRefundFailsIfCampaignSuccessful() external{
+    function testClaimRefundFailsIfCampaignSuccessful() external {
         vm.prank(user1);
         campaign.donateFunds{value: GOAL}();
 
@@ -162,7 +176,7 @@ contract CampaignTest is Test{
         campaign.claimRefund();
     }
 
-    function testClaimRefund() external{
+    function testClaimRefund() external {
         vm.prank(user1);
         campaign.donateFunds{value: LESS_THAN_GOAL}();
 
@@ -176,5 +190,10 @@ contract CampaignTest is Test{
         uint256 userFinalBalance = user1.balance;
 
         assertEq(userFinalBalance - userInitialBalance, LESS_THAN_GOAL);
+    }
+
+    function testGetTitle() external view {
+        string memory campaignTitle = campaign.getTitle();
+        assertEq(keccak256(abi.encodePacked(campaignTitle)), keccak256(abi.encodePacked("Test Campaign")));
     }
 }

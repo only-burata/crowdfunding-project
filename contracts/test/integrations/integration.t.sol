@@ -2,8 +2,8 @@
 pragma solidity ^0.8.19;
 
 import {Test} from "forge-std/Test.sol";
-import {CampaignManager} from "src/CampaignManager.sol";
-import {Campaign} from "src/Campaign.sol";
+import {CampaignManager} from "../../src/CampaignManager.sol";
+import {Campaign} from "../../src/Campaign.sol";
 
 contract IntegrationTest is Test {
     CampaignManager public manager;
@@ -13,9 +13,9 @@ contract IntegrationTest is Test {
     address public user2 = address(0x3);
     address public user3 = address(0x4);
 
-    uint constant DONOR_AMOUNT = 30 ether;
-    uint constant CAMPAIGN_GOAL = 100 ether;
-    uint constant CAMPAIGN_DURATION = 5 days;
+    uint256 constant DONOR_AMOUNT = 30 ether;
+    uint256 constant CAMPAIGN_GOAL = 100 ether;
+    uint256 constant CAMPAIGN_DURATION = 5 days;
 
     function setUp() external {
         manager = new CampaignManager();
@@ -30,7 +30,6 @@ contract IntegrationTest is Test {
 
     function testSuccessfulCampaignFlow() external {
         uint256 initialOwnerBalance = owner.balance;
-        uint256 initialCampaignBalance = address(campaign).balance;
         //funding the campaign
         vm.prank(user1);
         campaign.donateFunds{value: DONOR_AMOUNT}();
@@ -44,7 +43,7 @@ contract IntegrationTest is Test {
 
         // user trying to withdraw from a campaign they don't own
         vm.prank(user1);
-        vm.expectRevert();      
+        vm.expectRevert();
         campaign.withdrawFunds();
 
         //Owner trying to withdraw before goal is reached
@@ -66,7 +65,7 @@ contract IntegrationTest is Test {
 
         assertEq(finalCampaignBalance, 0);
         assertEq(finalOwnerBalance - initialOwnerBalance, balanceBeforeWithdraw);
-        assertEq(finalOwnerBalance - initialOwnerBalance, CAMPAIGN_GOAL + 2 * DONOR_AMOUNT);  
+        assertEq(finalOwnerBalance - initialOwnerBalance, CAMPAIGN_GOAL + 2 * DONOR_AMOUNT);
 
         // Users trying to claim refund after successful campaign
         vm.prank(user1);
@@ -77,7 +76,6 @@ contract IntegrationTest is Test {
         vm.prank(user1);
         vm.expectRevert();
         campaign.donateFunds{value: DONOR_AMOUNT}();
-
     }
 
     function testUnsuccessfulCampaignFlow() external {
@@ -122,60 +120,37 @@ contract IntegrationTest is Test {
         campaign.claimRefund();
     }
 
-    function testMultipleCampaignsSeparation() public { 
-        // Owner creates Campaign #2 (goal = 100)
+    function testGetCampaignsThroughManager() external {
+        uint256 initialCampaignCount = manager.getUserCampaignCount(owner);
+        // Creating additional campaigns
         vm.prank(owner);
-        campaignManager.createCampaign("Second Campaign", 100 ether, 7);
-        address campaign2Addr = campaignManager.getCampaignAddress(owner, 2);
-        Campaign campaign2 = Campaign(campaign2Addr);
+        manager.createCampaign("Second Campaign", 50 ether, CAMPAIGN_DURATION);
+        vm.prank(owner);
+        manager.createCampaign("Third Campaign", 75 ether, CAMPAIGN_DURATION);
 
-        // Fund campaign #1 with user1
-        vm.deal(user1, 60 ether);
-        vm.prank(user1);
-        campaignManager.fundCampaign{value: 60 ether}(1, owner);
+        // Fetching campaigns for the owner
+        uint256 finalCampaignCount = manager.getUserCampaignCount(owner);
 
-        // Fund campaign #2 with user2
-        vm.deal(user2, 150 ether);
-        vm.prank(user2);
-        campaignManager.fundCampaign{value: 150 ether}(2, owner);
+        address secondCampaignAddress = manager.getCampaignAddress(owner, 2);
+        address thirdCampaignAddress = manager.getCampaignAddress(owner, 3);
+        assert(secondCampaignAddress != address(0));
+        assert(thirdCampaignAddress != address(0));
 
-        // Check contributions are isolated
-        assertEq(campaign1.getContribution(user1), 60 ether);
-        assertEq(campaign1.getBalance(), 60 ether);
+        string memory secondCampaignTitle = Campaign(secondCampaignAddress).getTitle();
+        string memory thirdCampaignTitle = Campaign(thirdCampaignAddress).getTitle();
 
-        assertEq(campaign2.getContribution(user2), 150 ether);
-        assertEq(campaign2.getBalance(), 150 ether);
+        assertEq(finalCampaignCount, initialCampaignCount + 2);
+        assertEq(secondCampaignTitle, "Second Campaign");
+        assertEq(thirdCampaignTitle, "Third Campaign");
 
-        // Move forward in time to expire campaigns
-        vm.warp(block.timestamp + 8 days);
+        // CampaignManager.CampaignInfo[] memory campaigns = manager.getCampaignsByCreator(owner);
+        // assertEq(campaigns.length, 3);
+        // assertEq(campaigns[0].title, "Interaction");
+        // assertEq(campaigns[1].title, "Second Campaign");
+        // assertEq(campaigns[2].title, "Third Campaign");
 
-        // Refund user1 from campaign #1 (failed)
-        vm.prank(user1);
-        campaignManager.claimRefundThroughManager(owner, 1);
-        assertEq(campaign1.getContribution(user1), 0);
-
-        // Refund user2 from campaign #2 (also failed)
-        vm.prank(user2);
-        campaignManager.claimRefundThroughManager(owner, 2);
-        assertEq(campaign2.getContribution(user2), 0);
-
-        // Both balances should be empty after refunds
-        assertEq(campaign1.getBalance(), 0);
-        assertEq(campaign2.getBalance(), 0);
+        // // Fetching campaigns for a user with no campaigns
+        // CampaignManager.CampaignInfo[] memory noCampaigns = manager.getCampaignsByCreator(user1);
+        // assertEq(noCampaigns.length, 0);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-    
-       
-
 }

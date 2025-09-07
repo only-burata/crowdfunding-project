@@ -7,17 +7,13 @@ contract CampaignManager {
     error CampaignDoesNotExist();
 
     // Maps owner address to campaign id to campaign address
-    mapping(address => mapping(uint => address)) private userCampaigns;
+    mapping(address => mapping(uint256 => address)) private userCampaigns;
     // Maps owner address to number of campaigns created
     mapping(address => uint256) public userCampaignCount;
 
     event CampaignCreated(address indexed owner, uint256 indexed id, address campaignAddress);
 
-    function createCampaign(
-        string calldata name,
-        uint256 goal,
-        uint256 durationInDays
-    ) external {
+    function createCampaign(string calldata name, uint256 goal, uint256 durationInDays) external {
         uint256 newId = userCampaignCount[msg.sender] + 1;
         userCampaignCount[msg.sender] = newId;
 

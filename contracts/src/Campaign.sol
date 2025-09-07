@@ -11,13 +11,17 @@ contract Campaign {
     error CampaignNotFailed();
     error CampaignNotEnded();
 
-    enum CampaignState{Active, Successful, Failed}
+    enum CampaignState {
+        Active,
+        Successful,
+        Failed
+    }
 
     CampaignState private state;
 
     address private immutable i_owner;
     uint256 private immutable i_goal;
-    string private name;
+    string private title;
     uint256 private immutable i_duration;
     uint256 private immutable i_startTime;
 
@@ -28,39 +32,32 @@ contract Campaign {
     event FundsWithdrawn(address indexed owner, uint256 amount, address indexed campaign);
     event RefundClaimed(address indexed sender, uint256 amount, address indexed campaign);
 
-   
-
-    constructor(address owner, string memory _name, uint256 goal, uint256 durationIndays) {
+    constructor(address owner, string memory _title, uint256 goal, uint256 durationIndays) {
         i_owner = owner;
         i_goal = goal;
-        name = _name;
+        title = _title;
         state = CampaignState.Active;
         i_duration = block.timestamp + (durationIndays * 1 days);
         i_startTime = block.timestamp;
     }
 
-    function checkAndUpdateCampaignState() public{
-        if(state == CampaignState.Active){
-            if(block.timestamp >= i_duration){
-                if(address(this).balance >= i_goal){
+    function checkAndUpdateCampaignState() public {
+        if (state == CampaignState.Active) {
+            if (block.timestamp >= i_duration) {
+                if (address(this).balance >= i_goal) {
                     state = CampaignState.Successful;
-                }
-                else{
+                } else {
                     state = CampaignState.Failed;
                 }
-            }else{
-                 if(address(this).balance >= i_goal){
+            } else {
+                if (address(this).balance >= i_goal) {
                     state = CampaignState.Successful;
-                }
-                else{
+                } else {
                     state = CampaignState.Active;
                 }
             }
-
         }
     }
-
-    
 
     function donateFunds() public payable {
         if (state != CampaignState.Active) {
@@ -69,7 +66,7 @@ contract Campaign {
         if (msg.value == 0) {
             revert NotEnoughFundsSent();
         }
-        if(s_sendersToAmountFunded[msg.sender] == 0){
+        if (s_sendersToAmountFunded[msg.sender] == 0) {
             s_senders.push(msg.sender);
         }
         s_sendersToAmountFunded[msg.sender] += msg.value;
@@ -84,15 +81,14 @@ contract Campaign {
             revert NotOwner();
         }
         checkAndUpdateCampaignState();
-        if (state != CampaignState.Successful){
+        if (state != CampaignState.Successful) {
             revert GoalNotReached();
-        }   
+        }
         uint256 balance = address(this).balance;
         (bool success,) = payable(msg.sender).call{value: balance}("");
         require(success);
 
         emit FundsWithdrawn(i_owner, balance, address(this));
-
     }
 
     function claimRefund() external {
@@ -107,23 +103,24 @@ contract Campaign {
         }
         s_sendersToAmountFunded[msg.sender] = 0;
 
-        (bool success, ) = payable(msg.sender).call{value: amount}("");
+        (bool success,) = payable(msg.sender).call{value: amount}("");
         require(success, "Refund failed");
 
         emit RefundClaimed(msg.sender, amount, address(this));
     }
-       /**
+    /**
      * @notice Returns the remaining time in seconds until the campaign ends.
      * @return The number of seconds left; returns 0 if the campaign has ended.
      */
-    function getTimeLeft() external view returns(uint256){
-        if(block.timestamp >= i_duration){
+
+    function getTimeLeft() external view returns (uint256) {
+        if (block.timestamp >= i_duration) {
             return 0;
-        }else{
+        } else {
             return i_duration - block.timestamp;
         }
     }
-        
+
     /**
      * Getters
      *
@@ -137,35 +134,35 @@ contract Campaign {
         return i_goal;
     }
 
-    function getName() external view returns(string memory){
-        return name;
+    function getTitle() external view returns (string memory) {
+        return title;
     }
 
     function getSenders() external view returns (address[] memory) {
         return s_senders;
     }
 
-    function getContribution(address donor) external view returns(uint256){
+    function getContribution(address donor) external view returns (uint256) {
         return s_sendersToAmountFunded[donor];
     }
 
-    function getBalance() external view returns(uint256){
+    function getBalance() external view returns (uint256) {
         return address(this).balance;
     }
 
-    function getDuration() external view returns(uint256){
+    function getDuration() external view returns (uint256) {
         return i_duration;
     }
 
-    function getState() external view returns(CampaignState){
+    function getState() external view returns (CampaignState) {
         return state;
     }
 
-    function getStartTime() external view returns(uint256){
+    function getStartTime() external view returns (uint256) {
         return i_startTime;
     }
 
-    function getEndTime() external view returns(uint256){
+    function getEndTime() external view returns (uint256) {
         return i_duration;
     }
 
@@ -176,6 +173,4 @@ contract Campaign {
     // fallback() external payable {
     //     donateFunds();
     // }
-
-    
 }
