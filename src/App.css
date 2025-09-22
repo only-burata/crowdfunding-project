@@ -1,0 +1,388 @@
+@import "tailwindcss";
+
+/* Your custom styles */
+
+body {
+    font-family: 'inter', sana-serif;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.nav active {
+    background: linear-gradient(90deg, rgba(59,130,246,0.1) 0%, rgba (59, 130, 246, 0) 100%);
+    border-right: 3px solid #3b82f6;
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.nav-item {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.nav-item:hover::before {
+  left: 100%;
+}
+
+.nav-item:hover {
+  background: rgba(59, 130, 246, 0.05);
+  transform: translateX(5px);
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+}
+
+.progress-bar {
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-image: linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.2) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.2) 75%,
+    transparent 75%,
+    transparent
+  );
+  z-index: 1;
+  background-size: 20px 20px;
+  animation: move 1s linear infinite;
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+@keyframes move {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 20px 20px;
+  }
+}
+
+.theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.theme-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #93c5fd;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #4B5563;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.campaign-card {
+  transition: all 0.3s ease;
+}
+
+.campaign-card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateY(-3px);
+}
+
+.floating-button {
+  box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
+}
+
+.wallet-connector {
+  position: relative;
+  display: inline-block;
+}
+
+.wallet-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: rgba(16, 77, 105, 0.466);
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 8px;
+  pointer-events: all;
+}
+
+.wallet-connector:hover .wallet-menu {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.3s ease;
+}
+
+.dark .wallet-menu {
+  background-color: #1f2937;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.4);
+}
+
+.wallet-option {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.wallet-option:hover {
+  background-color: #727e96;
+}
+
+.dark .wallet-option:hover {
+  background-color: #374151;
+}
+
+.wallet-option i {
+  margin-right: 8px;
+  width: 20px;
+  text-align: center;
+}
+
+/* Animation for menu items */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.wallet-menu {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Hover effects for buttons */
+.btn-hover {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-hover:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-hover:hover:before {
+  left: 100%;
+}
+
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* Hover effect for campaign images */
+.campaign-card img {
+  transition: transform 0.3s ease;
+}
+
+.campaign-card:hover img {
+  transform: scale(1.05);
+}
+
+/* Animation for the support button */
+.btn-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-hover:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-hover:hover:before {
+  left: 100%;
+}
+
+
+.dashboard-bg {
+  background-image: url('public\istockphoto.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.dark .dashboard-bg {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                   url('public\istockphoto.jpg');
+}
+
+/* Set the base background color for the entire app */
+body {
+  background-color: #2c3e50;
+}
+
+/* Ensure all child components inherit the background */
+.app-container {
+  background-color: #2c3e50;
+}
+
+/* Update card backgrounds to contrast with the dark background */
+.bg-white {
+  background-color: #34495e !important; /* A slightly lighter shade for contrast */
+}
+
+.dark\:bg-gray-800 {
+  background-color: #2c3e50 !important; /* Same as main background */
+}
+
+/* Update text colors for better readability on dark background */
+.text-gray-800 {
+  color: #ecf0f1 !important; /* Light text for dark background */
+}
+
+.text-gray-600 {
+  color: #080808 !important; /* Slightly lighter text */
+}
+
+.text-gray-500 {
+  color: #a7adb1 !important; /* Even lighter text */
+}
+
+/* Update specific component backgrounds */
+.dashboard-bg {
+  background-color: #2c3e50;
+}
+
+/* Update navigation background */
+.bg-white.shadow-lg {
+  background-color: #34495e !important; /* Slightly lighter for contrast */
+  border-right: 1px solid #3a506b;
+}
+
+/* Update header background */
+.bg-white.dark\:bg-gray-800 {
+  background-color: #d3e2f1 !important;
+  border-bottom: 1px solid #3a506b;
+}
+
+/* Update button styles to match the new color scheme */
+.bg-blue-600 {
+  background-color: #3498db !important;
+}
+
+.bg-blue-600:hover {
+  background-color: #2980b9 !important;
+}
+
+/* Update progress bars */
+.bg-blue-600 {
+  background-color: #3498db !important;
+}
+
+.bg-green-600 {
+  background-color: #2ecc71 !important;
+}
+
+.dashboard-header-bg {
+  background-image: url('public\istockphoto.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.dark .dashboard-header-bg {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                   url('public\istockphoto.jpg');
+}
+
+.wallet-menu {
+  background-color: #34495e;
+  border: 1px solid #3a506b;
+}
+
+.wallet-option {
+  color: #ecf0f1;
+}
+
+.wallet-option:hover {
+  background-color: #3a506b;
+}
