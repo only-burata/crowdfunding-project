@@ -1,64 +1,36 @@
-import React, { createContext, useContext, useState, useEffect} from 'react';
+// src/components/ActivityContext.tsx
+import React, { createContext, useContext, useState } from 'react';
 import type {ReactNode} from 'react';
-import type { Activity } from '../types';
 
 interface ActivityContextType {
-  activities: Activity[];
-  addActivity: (activity: Omit<Activity, 'timestamp'>) => void;
-  clearActivities: () => void;
+  activities: any[];
+  addActivity: (activity: any) => void;
 }
 
 const ActivityContext = createContext<ActivityContextType | undefined>(undefined);
 
-export const useActivity = () => {
-  const context = useContext(ActivityContext);
-  if (context === undefined) {
-    throw new Error('useActivity must be used within an ActivityProvider');
-  }
-  return context;
-};
+export const ActivityProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [activities, setActivities] = useState<any[]>([]);
 
-interface ActivityProviderProps {
-  children: ReactNode;
-}
-
-export const ActivityProvider: React.FC<ActivityProviderProps> = ({ children }) => {
-  const [activities, setActivities] = useState<Activity[]>([]);
-
-  useEffect(() => {
-    // Load activities from localStorage
-    const savedActivities = localStorage.getItem('recentActivities');
-    if (savedActivities) {
-      try {
-        setActivities(JSON.parse(savedActivities));
-      } catch (error) {
-        console.error('Failed to parse activities from localStorage:', error);
-        setActivities([]);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    // Save activities to localStorage whenever they change
-    localStorage.setItem('recentActivities', JSON.stringify(activities));
-  }, [activities]);
-
-  const addActivity = (activity: Omit<Activity, 'timestamp'>) => {
-    const newActivity: Activity = {
-      ...activity,
-      timestamp: new Date().toLocaleString(),
-    };
-    
-    setActivities(prev => [newActivity, ...prev.slice(0, 9)]); // Keep only 10 most recent
-  };
-
-  const clearActivities = () => {
-    setActivities([]);
+  const addActivity = (activity: any) => {
+    setActivities(prev => [...prev, { ...activity, id: Date.now(), timestamp: Date.now() }]);
   };
 
   return (
-    <ActivityContext.Provider value={{ activities, addActivity, clearActivities }}>
+    <ActivityContext.Provider value={{ activities, addActivity }}>
       {children}
     </ActivityContext.Provider>
   );
+};
+
+export const useActivity = () => {
+  const context = useContext(ActivityContext);
+  if (!context) {
+    // Return a fallback instead of throwing an error
+    return {
+      activities: [],
+      addActivity: () => {} // Empty function as fallback
+    };
+  }
+  return context;
 };

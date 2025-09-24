@@ -5,7 +5,7 @@ export const useCampaignManager = () => {
     const {address} = useAccount();
     const {writeContract} = useWriteContract();
 
-    //Create campaign
+    //To Create campaign
     const createCampaign = (name: string, goal: bigint, duration: number) => {
       return writeContract ({
         address: CAMPAIGN_MANAGER_ADDRESS,
@@ -16,7 +16,7 @@ export const useCampaignManager = () => {
   };
 
 
-//Get campaign user count
+//To Get campaign user count
      const { data: userCampaignCount } = useReadContract({
     address: CAMPAIGN_MANAGER_ADDRESS,
     abi: CAMPAIGN_MANAGER_ABI,
@@ -24,7 +24,7 @@ export const useCampaignManager = () => {
     args: [address],
   });
 
-  //Get campaign address
+  //To Get campaign address
   const getCampaignAddress = (id: number) => {
     const { data: campaignAddress } = useReadContract({
       address: CAMPAIGN_MANAGER_ADDRESS,

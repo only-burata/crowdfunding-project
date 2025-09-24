@@ -7,9 +7,9 @@ const WalletConnector: React.FC = () => {
 const { connect } = useConnect();
  const { disconnect } = useDisconnect();
  const [showMenu, setShowMenu] = useState(false);
-  const [copied, setCopied] = useState(false); // Add this state
+  const [copied, setCopied] = useState(false); 
 
-  // Add copy function
+  //To Add copy function
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -29,7 +29,7 @@ const { connect } = useConnect();
     { name: 'Coinbase Wallet',
         icon: 'fas fa-coinbaseWallet',
          connector: coinbaseWallet({
-        appName: 'Your Crowdfunding Project' // Required parameter 
+        appName: 'Your Crowdfunding Project' 
         }) },
   ];
 

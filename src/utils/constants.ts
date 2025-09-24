@@ -1,7 +1,7 @@
 export const CAMPAIGN_MANAGER_ADDRESS = "0x31696FB200d382E3b557bD4AD8d33069c0AE590D";
 export const CAMPAIGN_MANAGER_ABI = [
     //ABI goes here ooo
-    "./MyContractABI.json",
+    "./CampaignABI.json",
 
     "function createCampaign (string name, uint256 goal, uint256 durationInDays, external)",
     "function getCampaignAddress(address owner, uint256 id) external view returns (address)",
@@ -12,7 +12,7 @@ export const CAMPAIGN_MANAGER_ABI = [
 export const CAMPAIGN_ABI = [
 
 //ABI contract goes here 
- "./MyContractABI.json",
+ "./CampaignABI.json",
 
 "function donateFunds() public payable",
  "function withdrawFunds() external",

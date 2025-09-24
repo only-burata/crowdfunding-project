@@ -1,7 +1,7 @@
 import WalletConnector from './WalletConnector';
 
 interface HeaderProps {
-  setIsMobileOpen?: (isOpen: boolean) => void;
+  setIsMobileOpen?: (value: boolean) => void;
   isMobileOpen?: boolean;
 }
 

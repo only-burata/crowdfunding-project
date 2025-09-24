@@ -27,7 +27,7 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab }) => {
     }
   }, [darkMode]);
 
-  // Update navItems to include Profile
+  // navItems to include Profile
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: 'fas fa-home' },
     { id: 'discover', label: 'Discover', icon: 'fas fa-fire' },
@@ -38,12 +38,13 @@ const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab }) => {
   ];
 
   const handleGetHelp = () => {
-    // Open WhatsApp with your number
-    window.open('https://wa.me/1234567890', '_blank');
+    //To Open WhatsApp with number
+    window.open('https://wa.me/7032169134', '_blank');
   };
 
   return (
     <div className={`w-64 bg-[#34495e] shadow-lg flex flex-col fixed md:relative h-full z-40 transition-transform ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+    <div className="w-64 bg-[#34495e] shadow-lg flex flex-col"></div>
     <div className="w-64 bg-[#34495e] shadow-lg flex flex-col">
       <div className="p-6">
         <div className="flex items-center">

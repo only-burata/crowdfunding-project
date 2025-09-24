@@ -68,10 +68,3 @@ button:focus-visible {
   }
 }
 
- .background {
-    background-image: "url(public\istockphoto.jpg)";
-    background-size: 'cover';
-    background-position: 'center';
-    background-repeat: 'no-repeat';
-    min-height: '100vh'
-  };
