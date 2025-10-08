@@ -23,7 +23,7 @@ contract IntegrationTest is Test {
         vm.deal(user2, 150 ether);
         vm.deal(user3, 150 ether);
         vm.prank(owner);
-        manager.createCampaign("Interaction", CAMPAIGN_GOAL, CAMPAIGN_DURATION);
+        manager.createCampaign("Interaction", CAMPAIGN_GOAL, CAMPAIGN_DURATION, "http://localhost", "description");
         address campaignAddress = manager.getCampaignAddress(owner, 1);
         campaign = Campaign(campaignAddress);
     }
@@ -124,9 +124,9 @@ contract IntegrationTest is Test {
         uint256 initialCampaignCount = manager.getUserCampaignCount(owner);
         // Creating additional campaigns
         vm.prank(owner);
-        manager.createCampaign("Second Campaign", 50 ether, CAMPAIGN_DURATION);
+        manager.createCampaign("Second Campaign", 50 ether, CAMPAIGN_DURATION, "http://localhost", "description");
         vm.prank(owner);
-        manager.createCampaign("Third Campaign", 75 ether, CAMPAIGN_DURATION);
+        manager.createCampaign("Third Campaign", 75 ether, CAMPAIGN_DURATION, "http://localhost", "description");
 
         // Fetching campaigns for the owner
         uint256 finalCampaignCount = manager.getUserCampaignCount(owner);

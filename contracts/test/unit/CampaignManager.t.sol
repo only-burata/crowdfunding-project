@@ -20,7 +20,7 @@ contract CampaignManagerTest is Test {
 
     function testCreateCampaign() external {
         vm.prank(owner);
-        campaignManager.createCampaign("Test Campaign", 100 ether, 7);
+        campaignManager.createCampaign("Test Campaign", 100 ether, 7, "http://localhost", "description");
 
         address campaignAddress = campaignManager.getCampaignAddress(owner, 1);
         assert(campaignAddress != address(0));
@@ -28,7 +28,7 @@ contract CampaignManagerTest is Test {
 
     function testCreateCampaignOwnerIsCorrect() external {
         vm.prank(owner);
-        campaignManager.createCampaign("Test Campaign", 100 ether, 7);
+        campaignManager.createCampaign("Test Campaign", 100 ether, 7, "http://localhost", "description");
         address campaignAddress = campaignManager.getCampaignAddress(owner, 1);
 
         //Check that the campaign address is not zero
@@ -44,7 +44,7 @@ contract CampaignManagerTest is Test {
     function testCreateCampaignIncrementsCampaignCount() external {
         uint256 initialCount = campaignManager.getUserCampaignCount(owner);
         vm.prank(owner);
-        campaignManager.createCampaign("Test Campaign", 100 ether, 7);
+        campaignManager.createCampaign("Test Campaign", 100 ether, 7, "http://localhost", "description");
         uint256 newCount = campaignManager.getUserCampaignCount(owner);
         assert(newCount == initialCount + 1);
     }

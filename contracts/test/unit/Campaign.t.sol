@@ -21,7 +21,7 @@ contract CampaignTest is Test {
 
     function setUp() external {
         vm.prank(owner);
-        campaign = new Campaign(owner, "Test Campaign", GOAL, DURATION_IN_DAYS);
+        campaign = new Campaign(owner, "Test Campaign", GOAL, DURATION_IN_DAYS, "http://localhost", "description");
         vm.deal(user1, 200 ether);
         vm.deal(user2, 200 ether);
     }

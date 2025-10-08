@@ -13,11 +13,11 @@ contract CampaignManager {
 
     event CampaignCreated(address indexed owner, uint256 indexed id, address campaignAddress);
 
-    function createCampaign(string calldata name, uint256 goal, uint256 durationInDays) external {
+    function createCampaign(string calldata name, uint256 goal, uint256 durationInDays, string calldata imgUrl, string calldata description) external {
         uint256 newId = userCampaignCount[msg.sender] + 1;
         userCampaignCount[msg.sender] = newId;
 
-        Campaign campaign = new Campaign(msg.sender, name, goal, durationInDays);
+        Campaign campaign = new Campaign(msg.sender, name, goal, durationInDays, imgUrl, description);
         userCampaigns[msg.sender][newId] = address(campaign);
 
         emit CampaignCreated(msg.sender, newId, address(campaign));
