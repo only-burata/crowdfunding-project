@@ -1,68 +1,172 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+*{
+    box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+    margin: 0;
+    font-family: Inter, sans-serif;
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
+    padding: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    background-color: #0387e6
 }
 button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+    background-color: White;
+    border: 1px solid #e0dfdf;
+    color: black;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+nav {
+    display: flex;
+    justify-content: space-between;
+    height: 50px;
+    padding-left: 20px;
+    padding-right: 20px;
+    align-items: center;
+    background-color: white;
+    box-shadow: 0px 2px 0px rgb(236, 235, 235);
+    margin-bottom: 0;
+    position: sticky;
+    top: 0; 
+    z-index: 1000;
+}
+
+
+
+.logo-container {
+    width: 40px;
+    height: 40px;
+    
+}
+.logo-container > img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.logo-container > img:hover {
+    transform: scale(1.2);
+}
+
+.navigation-links {
+    display: flex;
+    gap: 20px;
+    
+}
+
+.navigation-links > span:hover {
+    color:#0387e6;
+}
+
+.navbutton{
+    padding: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    /* background-color: rgb(83, 83, 207); */
+}
+
+.navbutton.connected {
+    background-color: #0387e6;
+}
+
+.navbutton.connected:hover{
+    background-color: white;
+    color: black; 
+    border: 1px solid #e0dfdf;
+}
+
+.navbutton.disconnected:hover {
+    background-color: #0387e6;
+    color: white;
+}
+.navbutton.disconnected {
+    background-color: white;
+    color: black;
+    border: 1px solid #e0dfdf
+}
+
+.main-area {
+    margin-top: 0;
+    background-color: rgb(48, 53, 53);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 150px);
+    color: white;
+    
+}
+.main-area > h1 {
+    font-size: 50px;
+    
+}
+
+.main-area > p {
+    margin-bottom: 30px;
+}
+
+.campaign-form {
+    border: black solid 1px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin: 30px;
+    border: 1px solid #e0dfdf;
+    border-radius: 20px;
+}
+.goal-and-date{
+    display: flex;
+    justify-content: space-between;
+    gap: 100px;
+}
+.goalDate {
+    flex: 1;
+}
+.warning {
+    display: flex;
+    align-items:self-start;
+    padding: 20px;
+    border: solid indianred 1px;
+    border-radius: 20px;
+}
+
+.warning-image {
+    width: 20px;
+}
+.warning-message {
+    color: indianred;
+    margin-left: 10px;
+
+}
+
+textarea {
+    resize: none;
+    border-radius: 7px;
+    padding: 10px;
+    border: 1px solid #c4c2c2;
+    font-family: Inter, sans-serif;
+    font-size: 15px;
+
+}
+
+input {
+    padding: 15px;
+    border-radius: 7px;
+    border: 1px solid #c4c2c2;
+    font-family: Inter, sans-serif;
+    font-size: 15px;
+}
+
+.launch-campaign-button{
+    width: 200px;
 }

@@ -6,6 +6,7 @@ export
 
 # Deploy script
 DEPLOY_SCRIPT := script/DeployManager.s.sol
+ABI_FOLDER := ../frontend/ABIs
 
 .PHONY: all deploy-anvil deploy-sepolia
 
@@ -32,3 +33,11 @@ deploy-sepolia:
 		--broadcast \
 		-vvvv
 	@echo "✅ Deployment & verification on Sepolia complete!"
+
+compile:
+	@echo "🚀Compiling contracts"
+	forge build
+	@echo "🚀extracting ABIs"
+	forge inspect Campaign abi --json > $(ABI_FOLDER)/Campaign_abi.json
+	forge inspect CampaignManager abi --json > $(ABI_FOLDER)/CampaignManager_abi.json
+	@echo "✅ ABIs extracted"

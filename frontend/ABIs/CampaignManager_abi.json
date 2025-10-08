@@ -17,6 +17,16 @@
         "name": "durationInDays",
         "type": "uint256",
         "internalType": "uint256"
+      },
+      {
+        "name": "imgUrl",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "description",
+        "type": "string",
+        "internalType": "string"
       }
     ],
     "outputs": [],
