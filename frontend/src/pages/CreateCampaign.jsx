@@ -6,6 +6,7 @@ import { useStateContext } from "../context";
 export default function CreateCampaign() {
     const [isRequired, setIsRequired] = useState(false)
     const {createCampaign} = useStateContext()
+    const {account} = useStateContext()
     
     async function handleSubmit(formData) {
         const formObj ={
@@ -17,7 +18,7 @@ export default function CreateCampaign() {
        }
        await createCampaign(formObj)
     }
-    
+
     return(        
         <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
             <h1 style={{color: "#0387e6"}}>Create a new campaign</h1>
@@ -68,8 +69,8 @@ export default function CreateCampaign() {
                     <FormField
                         required={isRequired}
                         label='Image'
-                        name='campaignEndDate'
-                        type="url"
+                        name='imgUrl'
+                        type="text"
                         placeholder={'Paste a url for your image here'}
                         isTextArea={false}
                     />
@@ -81,7 +82,8 @@ export default function CreateCampaign() {
                         </div>
                     </div>
                     <CustomButton
-                        text='Launch campaign'
+                        disabled={account ? false: true}
+                        text={account ? "Create campaign" : "Please Connect wallet"}
                         className={'launch-campaign-button'}
                     />
 

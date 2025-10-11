@@ -16,12 +16,15 @@ all: deploy-anvil
 deploy-anvil:
 	@echo "🚀 Deploying contracts to Anvil..."
 	forge script $(DEPLOY_SCRIPT) \
-		--rpc-url $(ANVIL_URL) \
+		--rpc-url http://127.0.0.1:8545 \
 		--private-key $(ANVIL_PRIVATE_KEY) \
 		--broadcast \
-		--verify false \
 		-vvvv
 	@echo "✅ Deployment to Anvil complete!"
+	@echo "🚀extracting ABIs"
+	forge inspect Campaign abi --json > $(ABI_FOLDER)/Campaign_abi.json
+	forge inspect CampaignManager abi --json > $(ABI_FOLDER)/CampaignManager_abi.json
+	@echo "✅ ABIs extracted"
 
 # Deploy to Sepolia + verify on Etherscan
 deploy-sepolia:
@@ -33,6 +36,10 @@ deploy-sepolia:
 		--broadcast \
 		-vvvv
 	@echo "✅ Deployment & verification on Sepolia complete!"
+	@echo "🚀extracting ABIs"
+	forge inspect Campaign abi --json > $(ABI_FOLDER)/Campaign_abi.json
+	forge inspect CampaignManager abi --json > $(ABI_FOLDER)/CampaignManager_abi.json
+	@echo "✅ ABIs extracted"
 
 compile:
 	@echo "🚀Compiling contracts"
