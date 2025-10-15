@@ -2,10 +2,13 @@ import { useState, useContext } from "react";
 import { warning } from "../assets"
 import { CustomButton, FormField } from "../components"
 import { useStateContext } from "../context";
+import { useNavigate } from "react-router-dom";
 
 export default function CreateCampaign() {
-    const [isRequired, setIsRequired] = useState(false)
+    const [isRequired, setIsRequired] = useState(true)
+    const navigate = useNavigate()
     const {createCampaign} = useStateContext()
+    const {account} = useStateContext()
     
     async function handleSubmit(formData) {
         const formObj ={
@@ -14,10 +17,18 @@ export default function CreateCampaign() {
             goal: formData.get("goal"),
             campaignEndDate: formData.get("campaignEndDate"),
             imgUrl: formData.get("imgUrl"),
-       }
-       await createCampaign(formObj)
+        }
+        try{
+           const obj = await createCampaign(formObj)
+            if(obj){
+                navigate("/user-dashboard/my-campaigns")
+            }
+        }
+        catch(err){
+            console.error("Error creating Campaign", err)
+        }
     }
-    
+
     return(        
         <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
             <h1 style={{color: "#0387e6"}}>Create a new campaign</h1>
@@ -68,8 +79,8 @@ export default function CreateCampaign() {
                     <FormField
                         required={isRequired}
                         label='Image'
-                        name='campaignEndDate'
-                        type="url"
+                        name='imgUrl'
+                        type="text"
                         placeholder={'Paste a url for your image here'}
                         isTextArea={false}
                     />
@@ -81,7 +92,8 @@ export default function CreateCampaign() {
                         </div>
                     </div>
                     <CustomButton
-                        text='Launch campaign'
+                        disabled={account ? false: true}
+                        text={account ? "Create campaign" : "Please Connect wallet"}
                         className={'launch-campaign-button'}
                     />
 

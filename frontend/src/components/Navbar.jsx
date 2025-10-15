@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import CustomButton from "./CustomButton"
 import { logo } from "../assets"
 import clsx from "clsx"
@@ -8,6 +8,7 @@ import { ethers } from "ethers"
 
 export default function Navbar() {    
     const {account, connectWallet, setAccount, disconnectWallet} = useStateContext() 
+    
     console.log(`account: ${account}`)
     const isConnected = account !== ''      
     const buttonClassName = clsx({
@@ -29,8 +30,7 @@ export default function Navbar() {
             <div className="navigation-links">
                 <NavLink style={navLinkStyles} to="/">Home</NavLink>
                 <NavLink style={navLinkStyles} to="create-campaign">Create campaign</NavLink>
-                <NavLink style={navLinkStyles} to='/user-dashboard'>User Dashboard</NavLink>
-                <NavLink style={navLinkStyles} to='explore'>Explore</NavLink>
+                <NavLink style={navLinkStyles} to='user-dashboard/my-campaigns'>User Dashboard</NavLink>
             </div>
             <div className="nav-button">
                 <CustomButton

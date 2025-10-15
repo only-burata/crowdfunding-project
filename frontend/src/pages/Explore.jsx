@@ -1,3 +1,7 @@
+import { useState } from "react"
+
 export default function Explore() {
-    return(<p>Explore</p>)
+    return (
+        <h1>Explore</h1>
+    )
 }

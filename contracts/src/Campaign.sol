@@ -17,7 +17,18 @@ contract Campaign {
         Failed
     }
 
+    struct CampaignDetails {
+        address owner;
+        string title;
+        uint256 goal;
+        uint256 durationIndays;
+        string imgUrl;
+        string description;
+        uint256 startTime;
+    }
+
     CampaignState private state;
+    CampaignDetails public details;
 
     address private immutable i_owner;
     uint256 private immutable i_goal;
@@ -34,15 +45,24 @@ contract Campaign {
     event FundsWithdrawn(address indexed owner, uint256 amount, address indexed campaign);
     event RefundClaimed(address indexed sender, uint256 amount, address indexed campaign);
 
-    constructor(address owner, string memory _title, uint256 goal, uint256 durationIndays, string memory _imgUrl, string memory _description) {
+    constructor(address owner, string memory _title, uint256 _goal, uint256 _durationIndays, string memory _imgUrl, string memory _description) {
         i_owner = owner;
-        i_goal = goal;
+        i_goal = _goal;
         title = _title;
         state = CampaignState.Active;
-        i_duration = block.timestamp + (durationIndays * 1 days);
+        i_duration = block.timestamp + (_durationIndays * 1 days);
         i_startTime = block.timestamp;
         imgUrl = _imgUrl;
         description = _description;
+        details = CampaignDetails({
+            owner: i_owner,
+            title: _title,
+            goal: _goal,
+            durationIndays: _durationIndays,
+            imgUrl: _imgUrl,
+            description: _description,
+            startTime: i_startTime
+        });
     }
 
     function checkAndUpdateCampaignState() public {
@@ -170,6 +190,7 @@ contract Campaign {
     function getImgUrl() external view returns (string memory){
         return imgUrl;
     }
+    // function getCampaignDetails() external view returns ()
     // receive() external payable {
     //     donateFunds();
     // }

@@ -7,13 +7,12 @@ export default function FormField ({name, label, placeholder, type, isTextArea, 
             <textarea 
                 required={required}
                 name={name} 
-                id="" 
-                placeholder={placeholder}
+                    placeholder={placeholder}
                 rows="10"
             ></textarea>
        </div>
       ):(
-        <div className={className} style={{display: "flex", flexDirection: "column", gap: "10px"}}>
+        <div className={className} style={{display: "flex", flexDirection: "column", gap: "8px"}}>
             <label htmlFor={name}>{label}</label>
             <input
                 required={required}                 
