@@ -24,9 +24,7 @@ contract CampaignManager {
 
         Campaign campaign = new Campaign(msg.sender, name, goal, durationInDays, imgUrl, description);
         userCampaigns[msg.sender][newId] = address(campaign);
-
-       
-
+        
         emit CampaignCreated(msg.sender, newId, address(campaign));
     }
 

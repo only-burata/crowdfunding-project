@@ -7,28 +7,33 @@ import { getDaysLeft } from "../utils";
 
 const StateContext = createContext()
 export function StateContextProvider({children}){
-    const managerAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+    const managerAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
     const [account, setAccount] = useState('')
-    // const [provider, setProvider] = useState(null)
     const [managerContract, setManagerContract] = useState(null)
     const [campaignObject, setCampaignObject] = useState(null)
-    const [nonce, setNonce] = useState(0)
+    const [isLoading, setIsLoading] = useState(true)
+    const [transactionsPerformed, setTransactionsPerformed] = useState(0)
 
-    useEffect(() => {        
+    useEffect(() => { 
+        setIsLoading(true)
         getCampaigns()
-            .then((campaignsObj) => setCampaignObject(campaignsObj))
-    },[nonce])
+            .then((campaignsObj) => {
+                setCampaignObject(campaignsObj)
+                setIsLoading(false)
+            })
+    },[transactionsPerformed])
 
-    async function connectWallet(){
+    
+    async function connectWallet(){        
         try{
             if(window.ethereum){
                 const accounts = await window.ethereum.request({method: "eth_requestAccounts"})
                 const account =  accounts[0] 
-
+                
                 const provider = new ethers.BrowserProvider(window.ethereum)  
                 const signer = await provider.getSigner()
                 const contract = new ethers.Contract(managerAddress, CampaignManager_ABI, signer)
-
+                
                 setManagerContract(contract)
                 setAccount(account) 
             }
@@ -46,7 +51,7 @@ export function StateContextProvider({children}){
             console.error("Contract not initialized, connect wallet")
             return
         }
-        setNonce(nonce => nonce + 1)
+        setTransactionsPerformed(transactionsPerformed => transactionsPerformed + 1)
         const durationInDays = Math.ceil((new Date(campaignEndDate) - Date.now()) / (1000 *60 *60 *24))
         const formattedGoal = ethers.parseEther(goal)
 
@@ -60,6 +65,7 @@ export function StateContextProvider({children}){
             )
             await tx.wait()
             console.log(`Campaign created successfully ... tx hash: ${tx.hash}`)            
+            return tx
         }
         catch(err) {
             console.error("Error creating campaign:", err)
@@ -116,11 +122,13 @@ export function StateContextProvider({children}){
         }
     }
     async function getCampaignData(campaignAddress){
+        const states = ['Active', "Successful", "Failed"]
         const provider = new ethers.BrowserProvider(window.ethereum)
         const signer = await provider.getSigner()       
         const campaign = new ethers.Contract(campaignAddress, Campaign_ABI, signer)
         const balance = await campaign.getBalance()
         const data = await campaign.details()
+        const state = await campaign.getState()
         const formattedData = {
             address: campaignAddress,
             owner: data.owner,
@@ -134,7 +142,8 @@ export function StateContextProvider({children}){
                 startDate: Number(data.startTime)*1000, 
                 durationIndays: Number(data.durationIndays)
             }),
-            balance: ethers.formatEther(balance)
+            balance: ethers.formatEther(balance),
+            state: states[Number(state)]
         }
         /**
          *  owner: i_owner,
@@ -154,7 +163,53 @@ export function StateContextProvider({children}){
         const campaign = new ethers.Contract(campaignAddress, Campaign_ABI, signer)
         const tx = await campaign.donateFunds({value: ethers.parseEther(amount)})
         await tx.wait()
+        setTransactionsPerformed(transactionsPerformed + 1)
         return tx
+    }
+    
+    async function getSendersAndAmountFunded(campaignAddress) {
+        const provider = new ethers.BrowserProvider(window.ethereum)
+        const signer = await provider.getSigner()
+        const campaign = new ethers.Contract(campaignAddress, Campaign_ABI, signer)
+
+        const senders = await new ethers.Contract(
+            campaignAddress, 
+            Campaign_ABI, 
+            signer
+        ).getSenders()
+
+        const obj = {}
+        for(let i = 0; i < senders.length; i++){
+            const amountFunded = await campaign.getContribution(senders[i])
+            obj[senders[i].toLowerCase()] = ethers.formatEther(amountFunded)
+        }
+        console.log(obj)
+        return(obj)
+    }
+
+    async function getMyContributions(){
+        console.log("start")
+        const allCampaignAddresses = Object.values(campaignObject).flat()
+        const myContributionsArr = []
+        for(let i = 0; i < allCampaignAddresses.length; i++){
+            const contribution = {}
+            const address = allCampaignAddresses[i]
+            console.log("campaignAddress", address)
+            const campaignFundingData = await getSendersAndAmountFunded(address)
+            if(campaignFundingData[account] ){
+                const {state, title} = await getCampaignData(address)
+                contribution.index = i
+                contribution.title = title
+                contribution.address = address
+                contribution.amount = campaignFundingData[account]
+                contribution.state = state
+                myContributionsArr.push(contribution)
+            }
+        }
+
+        console.log(myContributionsArr)
+
+        return(myContributionsArr)
     }
 
     function disconnectWallet() {
@@ -166,6 +221,8 @@ export function StateContextProvider({children}){
         <StateContext.Provider 
             value={{
                 account,
+                isLoading,
+                setIsLoading,
                 setAccount,
                 connectWallet,
                 disconnectWallet,
@@ -175,7 +232,10 @@ export function StateContextProvider({children}){
                 getCampaigns,
                 campaignObject,
                 getCampaignData,
-                fundCampaign
+                fundCampaign,
+                getSendersAndAmountFunded,
+                transactionsPerformed,
+                getMyContributions
             }}         
         >
             {children}

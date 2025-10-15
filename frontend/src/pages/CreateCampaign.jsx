@@ -2,9 +2,11 @@ import { useState, useContext } from "react";
 import { warning } from "../assets"
 import { CustomButton, FormField } from "../components"
 import { useStateContext } from "../context";
+import { useNavigate } from "react-router-dom";
 
 export default function CreateCampaign() {
-    const [isRequired, setIsRequired] = useState(false)
+    const [isRequired, setIsRequired] = useState(true)
+    const navigate = useNavigate()
     const {createCampaign} = useStateContext()
     const {account} = useStateContext()
     
@@ -15,8 +17,16 @@ export default function CreateCampaign() {
             goal: formData.get("goal"),
             campaignEndDate: formData.get("campaignEndDate"),
             imgUrl: formData.get("imgUrl"),
-       }
-       await createCampaign(formObj)
+        }
+        try{
+           const obj = await createCampaign(formObj)
+            if(obj){
+                navigate("/user-dashboard/my-campaigns")
+            }
+        }
+        catch(err){
+            console.error("Error creating Campaign", err)
+        }
     }
 
     return(        

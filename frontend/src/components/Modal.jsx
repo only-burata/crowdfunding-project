@@ -1,12 +1,12 @@
 import CustomButton from './CustomButton'
-import { close } from '../assets'
+import { close, warning } from '../assets'
 import { useStateContext } from '../context'
 import {ethers} from "ethers"
 
 
 
-export default function Modal({closeModal, campaign, setContributed, contributed}) {
-    const {fundCampaign} = useStateContext()
+export default function Modal({closeModal, campaign}) {
+    const {fundCampaign, account} = useStateContext()
     const overlayStyles = {
         position: "fixed",
         top: "0",
@@ -23,7 +23,6 @@ export default function Modal({closeModal, campaign, setContributed, contributed
         const value = data.get("amount")
         console.log(campaign.address)
         const receipt = await fundCampaign(campaign.address, value)
-        setContributed(contributed + 1)
         console.log(receipt)
         closeModal()
     }
@@ -44,13 +43,18 @@ export default function Modal({closeModal, campaign, setContributed, contributed
                     </div>
                     <div className="modal-input-container">
                         <label htmlFor="amount">Contribution:</label>
-                        <input type="number" name="amount"  id="amount" placeholder='ETH' required={true}  />
+                        <input type="number" name="amount"  id="amount" placeholder='ETH' step={'0.1'} required={true}  />
                     </div>
+                    {account === '' && <div style={{margin: "10px", display: 'flex', gap: "10px"}}>
+                        <img src={warning} style={{width: "30px"}} alt="" />
+                        <h4>Connect wallet to donate</h4>
+                    </div>}
                     <div style={{width: "50%", display: "flex", gap: '7px', alignItems: "center"}}>
                         <CustomButton
                             style={{margin: "0", marginTop: "20px"}}
                             className={'modal-button-contribute'}
                             text={'Contribute'}
+                            disabled={account ==="" ? true : false}
                             // onClick={fund}
                             />      
                         <CustomButton

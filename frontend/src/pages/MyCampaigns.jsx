@@ -1,116 +1,73 @@
-import { useNavigate } from "react-router-dom"
-import { useEffect, useState } from "react"
-import { CampaignCard, CustomButton } from "../components"
-import { useStateContext } from "../context"
-import { ethers } from "ethers"
-import { Campaign_ABI } from "../../ABIs"
-import Modal from "../components/Modal"
-import mockData from "../mockData"
+import {useEffect, useState} from 'react'
+import { CampaignList } from '../components'
+import { useStateContext } from '../context'
+import { useNavigate } from 'react-router-dom'
+
 export default function MyCampaigns() {
-    const [isLoading, setIsLoading] = useState(false)
-    const [campaignAddresses, setCampaignAddresses] = useState([])
-    const [campaignCards, setCampaignCards] = useState([])
-    const [activeCard, setActiveCard] = useState(null)
-    const [modalOn, setModalOn] = useState(false)
-    const [contributed, setContributed] = useState(0)
+    const [myCampaigns, setMyCampaigns] = useState([])
+    const [campaignDataArray, setCampaignDataArray] = useState([])
+    const [pageLoading, setPageLoading] = useState(true)
 
     const navigate = useNavigate()
-    const {campaignObject, account, nonce, getCampaignData} = useStateContext()
+    const {campaignObject, account, getCampaignData, isLoading} = useStateContext()
     useEffect(() => {
-        async function fetchCampaigns() {
-            setIsLoading(true)
-            if(campaignObject){
-                if(campaignObject[account]===undefined){
-                    console.log("you havent created anycampaigns yet")
-                    return
-                }
-                const addresses = campaignObject[account]
-                console.log("addresses" ,addresses)
-
-                const cards = await Promise.all(                
-                    addresses.map(async (address) => {
-                        const data = await getCampaignData(address)
-                        return data
-                    })
-                )
-            
-                setCampaignAddresses(() => addresses)
-                setCampaignCards(cards)
+        async function getAllCampaignsData(){
+            if(isLoading){
+                return
             }
-            console.log("finished fetching campains")
-            setIsLoading(false)
+            setPageLoading(true)
+            const userCampaigns = campaignObject[account] 
+            console.log("myCampaigns" ,userCampaigns)
+            setMyCampaigns(userCampaigns)
+            const dataArray = []
+            for(let i = 0; i < userCampaigns.length; i ++){
+                const data = await getCampaignData(userCampaigns[i])
+                dataArray.push(data)
+            }
+            console.log(dataArray, "dataArray")
+            setPageLoading(false)
+            setCampaignDataArray(dataArray)
         }
-        fetchCampaigns()
-    
+        getAllCampaignsData()
+    },[campaignObject, account, isLoading])
 
-    },[account, contributed])
 
-    console.log(campaignCards)
-    function closeModal(){
-        document.body.classList.remove('no-scroll')
-        setModalOn(false)
-    }
-    
-    function handleCardClick(card){
-        setActiveCard(card)
-        document.body.classList.add('no-scroll')
-        setModalOn(true)
-    }
-
-    const cardElements = campaignCards.map((card, index) => {
+    if(pageLoading){
         return(
-            <CampaignCard
-                key={index}
-                onClick={() => handleCardClick(card)}
-                {...card}
-            />
-
-        )
-    })
-           
-    
-    if(isLoading){
-        return (
             <div>
-                <h1>Loading...</h1>
+                <h1>Loading</h1>
             </div>
         )
     }
-
-    if(!isLoading && campaignAddresses.length ===0){
+     if(!pageLoading && myCampaigns.length === 0){
         return(
-            <div>
-                <h1>You haven't created any campaigns</h1>
+            <div style={{display: "flex", flexDirection: " column", alignItems: 'center', justifyContent: 'center', height: "calc(100vh - 150px)", gap: "10px"}}>
+                <h1 style={{marginBlock: "0px"}}>No campaigns</h1>
+                <p style={{width: "400px", textAlign: "center"}}>You haven't started any campaigns yet. Create a campaign and make an impact</p>
+                <button onClick={() => navigate("/create-campaign")}>Create a campaign</button>
             </div>
         )
     }
-
-    if(!isLoading && campaignAddresses.length > 0) {
-        return(
-            <>
-                <div className="featured-campaigns">
-                    <div className="all-campaigns">
-                        {cardElements}
-                        <CampaignCard {...mockData}/>
-                        <CampaignCard {...mockData}/>
-                        <CampaignCard {...mockData}/>
-                        <CampaignCard {...mockData}/>
-                        <CampaignCard {...mockData}/>
-                        <CampaignCard {...mockData}/>
-                        <CampaignCard {...mockData}/>
-                        <CampaignCard {...mockData}/>
-                        <CampaignCard {...mockData}/>
-                    </div>
+    console.log(campaignDataArray[1].address, "address")
+    return (
+        <div style={{display: 'flex', flexDirection: "column", alignItems: "center"}}>
+            <div style={{width: "80%", marginBlock: "50px", color: "#0387e6"}}>                
+                <h1>My campaigns</h1>
+            </div>
+            <div className='campaigns-list-container'>
+                <div className='campaigns-list-header'>
+                    <h3>Campaign Title</h3>
+                    <h3>Progress</h3>
+                    <h3>Status</h3>
                 </div>
-                {
-                modalOn && 
-                <Modal
-                    closeModal={closeModal}
-                    campaign={activeCard}
-                    setContributed={setContributed}
-                    contributed= {contributed}
-                />}
-            </>
-        )
-    }
+                {campaignDataArray.map((data) =>{
+                    return(
+                        <CampaignList
+                            {...data}
+                        />
+                    )
+                })}
+            </div>
+        </div>
+    )
 }
