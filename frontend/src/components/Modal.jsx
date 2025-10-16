@@ -43,7 +43,7 @@ export default function Modal({closeModal, campaign}) {
                     </div>
                     <div className="modal-input-container">
                         <label htmlFor="amount">Contribution:</label>
-                        <input type="number" name="amount"  id="amount" placeholder='ETH' step={'0.1'} required={true}  />
+                        <input type="number" name="amount"  id="amount" placeholder='ETH' step={'0.001'} required={true}  />
                     </div>
                     {account === '' && <div style={{margin: "10px", display: 'flex', gap: "10px"}}>
                         <img src={warning} style={{width: "30px"}} alt="" />

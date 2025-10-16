@@ -12,6 +12,11 @@ export default function MyContributions() {
             setPageLoading(true)
             if(isLoading){return}
             const contributionsArr = await getMyContributions()
+            if(!contributionsArr){
+                setContributionsArr([])
+                setPageLoading(false)
+                return
+            }
             setContributionsArr(contributionsArr)
             setPageLoading(false)
         }

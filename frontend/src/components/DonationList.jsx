@@ -3,7 +3,7 @@ import { ethers } from 'ethers'
 import { useStateContext } from '../context'
 import { Campaign_ABI } from '../../ABIs'
 import { NavLink } from 'react-router-dom'
-export default function DonationList({title, amount, state, address}) {
+export default function DonationList({title, amount, state, address, refundClaimed}) {
     async function claimRefund(address) {
         try {
             const signer = await new ethers.BrowserProvider(window.ethereum).getSigner()
@@ -20,13 +20,12 @@ export default function DonationList({title, amount, state, address}) {
         }
     }
     
-    const {getMyContributions} = useStateContext()
     const color = state === "Active" ?  "#0387e6" : state ==="Successful" ?  "green": "rgb(252, 71, 65)"
     const backgroundColor = state === "Active" ?  "#93d1fdff" :( state ==="Successful" )?  "rgb(122, 233, 122)": "rgb(252, 169, 169)"
     function returnedState(){
         if (state === "Failed"){
             return(
-                <button onClick={() => claimRefund(address)}>Claim</button>
+                <button disabled={refundClaimed} onClick={() => claimRefund(address)}>Claim</button>
                     
             )
         }
