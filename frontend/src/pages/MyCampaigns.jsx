@@ -12,21 +12,27 @@ export default function MyCampaigns() {
     const {campaignObject, account, getCampaignData, isLoading} = useStateContext()
     useEffect(() => {
         async function getAllCampaignsData(){
-            if(isLoading){
-                return
-            }
+            if(isLoading) return
             setPageLoading(true)
+            console.log(account, "account")
             const userCampaigns = campaignObject[account] 
             console.log("myCampaigns" ,userCampaigns)
-            setMyCampaigns(userCampaigns)
-            const dataArray = []
-            for(let i = 0; i < userCampaigns.length; i ++){
-                const data = await getCampaignData(userCampaigns[i])
-                dataArray.push(data)
+            if(userCampaigns === undefined){
+                setMyCampaigns([])
+                setPageLoading(false)
+                return
+            }else{
+
+                setMyCampaigns(userCampaigns)
+                const dataArray = []
+                for(let i = 0; i < userCampaigns.length; i ++){
+                    const data = await getCampaignData(userCampaigns[i])
+                    dataArray.push(data)
+                }
+                console.log(dataArray, "dataArray")
+                setPageLoading(false)
+                setCampaignDataArray(dataArray)
             }
-            console.log(dataArray, "dataArray")
-            setPageLoading(false)
-            setCampaignDataArray(dataArray)
         }
         getAllCampaignsData()
     },[campaignObject, account, isLoading])
@@ -48,7 +54,7 @@ export default function MyCampaigns() {
             </div>
         )
     }
-    console.log(campaignDataArray[1].address, "address")
+    console.log(campaignDataArray[1], "address")
     return (
         <div style={{display: 'flex', flexDirection: "column", alignItems: "center"}}>
             <div style={{width: "80%", marginBlock: "50px", color: "#0387e6"}}>                

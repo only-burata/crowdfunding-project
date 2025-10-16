@@ -10,6 +10,7 @@ contract Campaign {
     error NoRefundAvailable();
     error CampaignNotFailed();
     error CampaignNotEnded();
+    error UserAlreadyClaimedFunds();
 
     enum CampaignState {
         Active,
@@ -40,6 +41,7 @@ contract Campaign {
 
     address[] private s_senders;
     mapping(address => uint256) private s_sendersToAmountFunded;
+    mapping(address => bool) private s_claimed;
 
     event FundsDonated(address indexed donor, uint256 amount, address indexed campaign);
     event FundsWithdrawn(address indexed owner, uint256 amount, address indexed campaign);
@@ -125,7 +127,11 @@ contract Campaign {
         if (amount == 0) {
             revert NoRefundAvailable();
         }
+        if (s_claimed[msg.sender] == true){
+            revert UserAlreadyClaimedFunds();
+        }
         s_sendersToAmountFunded[msg.sender] = 0;
+        s_claimed[msg.sender] = true;
 
         (bool success,) = payable(msg.sender).call{value: amount}("");
         require(success, "Refund failed");
@@ -187,15 +193,10 @@ contract Campaign {
     function getEndTime() external view returns (uint256) {
         return i_duration;
     }
+    function checkClaimed(address user) external view returns (bool){
+        return s_claimed[user];
+    }
     function getImgUrl() external view returns (string memory){
         return imgUrl;
     }
-    // function getCampaignDetails() external view returns ()
-    // receive() external payable {
-    //     donateFunds();
-    // }
-
-    // fallback() external payable {
-    //     donateFunds();
-    // }
 }

@@ -7,7 +7,7 @@ import { getDaysLeft } from "../utils";
 
 const StateContext = createContext()
 export function StateContextProvider({children}){
-    const managerAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+    const managerAddress = "0xB585a638a387631173368B842ABB238015d9da15"
     const [account, setAccount] = useState('')
     const [managerContract, setManagerContract] = useState(null)
     const [campaignObject, setCampaignObject] = useState(null)
@@ -22,6 +22,39 @@ export function StateContextProvider({children}){
                 setIsLoading(false)
             })
     },[transactionsPerformed])
+
+    useEffect(() => {
+        if (window.ethereum) {
+            // 🔹 Listen for account changes
+            const handleAccountsChanged = (accounts) => {
+                if (accounts.length > 0) {
+                    setAccount(accounts[0]);
+                    // Optionally refresh campaigns or data for the new account
+                    getCampaigns().then(setCampaignObject);
+                } else {
+                    // User disconnected all accounts
+                    setAccount("");
+                    setManagerContract(null);
+                    setCampaignObject(null);
+                }
+            };
+
+            const handleChainChanged = () => {
+                window.location.reload(); 
+            };
+
+            window.ethereum.on("accountsChanged", handleAccountsChanged);
+            window.ethereum.on("chainChanged", handleChainChanged);
+
+            return () => {
+                if (window.ethereum.removeListener) {
+                    window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
+                    window.ethereum.removeListener("chainChanged", handleChainChanged);
+                }
+            };
+        }
+    }, []);
+
 
     
     async function connectWallet(){        
@@ -124,8 +157,7 @@ export function StateContextProvider({children}){
     async function getCampaignData(campaignAddress){
         const states = ['Active', "Successful", "Failed"]
         const provider = new ethers.BrowserProvider(window.ethereum)
-        const signer = await provider.getSigner()       
-        const campaign = new ethers.Contract(campaignAddress, Campaign_ABI, signer)
+        const campaign = new ethers.Contract(campaignAddress, Campaign_ABI, provider)
         const balance = await campaign.getBalance()
         const data = await campaign.details()
         const state = await campaign.getState()
@@ -196,6 +228,11 @@ export function StateContextProvider({children}){
             const address = allCampaignAddresses[i]
             console.log("campaignAddress", address)
             const campaignFundingData = await getSendersAndAmountFunded(address)
+            const refundClaimed = await new ethers.Contract(
+                address,
+                Campaign_ABI,
+                new ethers.BrowserProvider(window.ethereum)
+            ).checkClaimed(account)
             if(campaignFundingData[account] ){
                 const {state, title} = await getCampaignData(address)
                 contribution.index = i
@@ -203,6 +240,7 @@ export function StateContextProvider({children}){
                 contribution.address = address
                 contribution.amount = campaignFundingData[account]
                 contribution.state = state
+                contribution.refundClaimed = refundClaimed
                 myContributionsArr.push(contribution)
             }
         }
