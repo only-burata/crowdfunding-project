@@ -40,7 +40,7 @@ export default function MyCampaigns() {
 
     if(pageLoading){
         return(
-            <div>
+            <div style={{display: "flex",alignItems: "center", justifyContent: 'center'}}>
                 <h1>Loading</h1>
             </div>
         )

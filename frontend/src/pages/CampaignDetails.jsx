@@ -9,9 +9,9 @@ export default function CampaignDetails() {
     const [campaignData, setCampaignData] = useState(null)
     const [funders, setFunders] = useState(null)
     const [pageLoading, setPageLoading] = useState(true)
-    const {getCampaignData, getSendersAndAmountFunded, isLoading } = useStateContext()
     const [modalOn, setModalOn] = useState(false)
     
+    const {getCampaignData, getSendersAndAmountFunded, isLoading } = useStateContext()
 
     useEffect(() => {
         console.log("start")

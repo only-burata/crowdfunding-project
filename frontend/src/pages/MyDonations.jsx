@@ -25,8 +25,8 @@ export default function MyContributions() {
 
     if(pageLoading){
         return(
-            <div>
-                Loading
+            <div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+                <h1>Loading</h1>
             </div>
         )
     }

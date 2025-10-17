@@ -8,7 +8,7 @@ export default function CreateCampaign() {
     const [isRequired, setIsRequired] = useState(true)
     const navigate = useNavigate()
     const {createCampaign} = useStateContext()
-    const {account} = useStateContext()
+    const {account, managerContract} = useStateContext()
     
     async function handleSubmit(formData) {
         const formObj ={

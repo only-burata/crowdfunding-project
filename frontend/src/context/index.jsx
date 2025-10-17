@@ -13,7 +13,8 @@ export function StateContextProvider({children}){
     const [campaignObject, setCampaignObject] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
     const [transactionsPerformed, setTransactionsPerformed] = useState(0)
-
+    
+    
     useEffect(() => { 
         setIsLoading(true)
         getCampaigns()
@@ -26,7 +27,7 @@ export function StateContextProvider({children}){
     useEffect(() => {
         if (window.ethereum) {
             // 🔹 Listen for account changes
-            const handleAccountsChanged = (accounts) => {
+            function handleAccountsChanged(accounts){
                 if (accounts.length > 0) {
                     setAccount(accounts[0]);
                     // Optionally refresh campaigns or data for the new account
@@ -39,7 +40,7 @@ export function StateContextProvider({children}){
                 }
             };
 
-            const handleChainChanged = () => {
+            function handleChainChanged(){
                 window.location.reload(); 
             };
 
@@ -201,14 +202,9 @@ export function StateContextProvider({children}){
     
     async function getSendersAndAmountFunded(campaignAddress) {
         const provider = new ethers.BrowserProvider(window.ethereum)
-        const signer = await provider.getSigner()
-        const campaign = new ethers.Contract(campaignAddress, Campaign_ABI, signer)
+        const campaign = new ethers.Contract(campaignAddress, Campaign_ABI, provider)
 
-        const senders = await new ethers.Contract(
-            campaignAddress, 
-            Campaign_ABI, 
-            signer
-        ).getSenders()
+        const senders = await campaign.getSenders()
 
         const obj = {}
         for(let i = 0; i < senders.length; i++){

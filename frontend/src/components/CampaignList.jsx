@@ -2,7 +2,9 @@ import React from 'react'
 import ProgressBar from './ProgressBar'
 import clsx from 'clsx'
 import { NavLink } from 'react-router-dom'
-export default function CampaignList({goal, balance, daysLeft, title, state, address}) {
+export default function 
+
+CampaignList({goal, balance, daysLeft, title, state, address}) {
     let status = ""
     if(state === "Active"){
         status = daysLeft === 1 ?   "1 day left" :`${daysLeft} days left`
@@ -12,7 +14,8 @@ export default function CampaignList({goal, balance, daysLeft, title, state, add
     
     const navLinkStyles = () =>({
         textDecoration : "none",
-        color: "black"
+        color: "black",
+        maxWidth: "160px"
 
     })
     const color = state === "Active" ?  "#0387e6" : state ==="Successful" ?  "green": "rgb(252, 71, 65)"
