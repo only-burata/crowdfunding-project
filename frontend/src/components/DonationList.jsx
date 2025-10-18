@@ -1,9 +1,13 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { ethers } from 'ethers'
 import { useStateContext } from '../context'
 import { Campaign_ABI } from '../../ABIs'
 import { NavLink } from 'react-router-dom'
 export default function DonationList({title, amount, state, address, refundClaimed}) {
+    const [claimed, setClaimed] = useState(false)
+    if (claimed !== refundClaimed){
+        setClaimed(refundClaimed)
+    }
     async function claimRefund(address) {
         try {
             const signer = await new ethers.BrowserProvider(window.ethereum).getSigner()
@@ -13,6 +17,7 @@ export default function DonationList({title, amount, state, address, refundClaim
                 signer
             ).claimRefund()
             await tx.wait()
+            setClaimed(true)
             console.log(tx)
         }
         catch(err){
@@ -25,7 +30,7 @@ export default function DonationList({title, amount, state, address, refundClaim
     function returnedState(){
         if (state === "Failed"){
             return(
-                <button disabled={refundClaimed} onClick={() => claimRefund(address)}>Claim</button>
+                <button disabled={claimed} onClick={() => claimRefund(address)}>{claimed ? "Claimed": "Claim"}</button>
                     
             )
         }
