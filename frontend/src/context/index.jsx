@@ -174,7 +174,10 @@ export function StateContextProvider({children}){
             daysLeft : getDaysLeft({
                 startDate: Number(data.startTime)*1000, 
                 durationIndays: Number(data.durationIndays)
-            }),
+            }) > 0 ? getDaysLeft({
+                startDate: Number(data.startTime)*1000, 
+                durationIndays: Number(data.durationIndays)
+            }) : 0,
             balance: ethers.formatEther(balance),
             state: states[Number(state)]
         }
